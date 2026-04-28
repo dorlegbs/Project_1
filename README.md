@@ -1,3 +1,2 @@
-# Projeto-da-bibi
-Este é o meu projeto em python.
-
+# Projeto-da-gabi
+Produzido por Gabriela Dorle - Estudante da Fundação Getúlio Vargas
