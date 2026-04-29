@@ -8,7 +8,7 @@ import streamlit as st
 import requests
 import time
 from datetime import datetime, timedelta
-from telegram import Bot
+from telegram.bot import Bot
 
 # ============================================================
 # 🔧 O QUE VOCÊ PRECISA SUBSTITUIR
