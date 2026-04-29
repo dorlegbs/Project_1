@@ -1,113 +1,174 @@
+# ============================================================
+# 🚨 ALERTA DE CRISE DE MARCA — CÓDIGO ÚNICO
+# Python + Streamlit + NewsAPI + Telegram Bot
+#
+# O sistema monitora menções de uma marca e envia alerta
+# automático no Telegram quando detecta um pico de volume.
+#
+# ============================================================
+
 import streamlit as st
 import requests
-from pytrends.request import TrendReq
+import telepot
+import time
 from datetime import datetime, timedelta
 
-# -------------------------
-# CONFIGURAÇÕES
-# -------------------------
+# ============================================================
+# 🔧 O QUE VOCÊ PRECISA SUBSTITUIR
+# ============================================================
 
-NEWS_API_KEY = "SUA_CHAVE_AQUI"
+# 1. Sua chave da NewsAPI
+NEWS_API_KEY = "c5a9421e78db4a1ea44f579ab3c03ee3"
 
-st.set_page_config(
-    page_title="Radar de Hype",
-    page_icon="📈",
-    layout="centered"
-)
+# 2. Token do seu Bot do Telegram
+TELEGRAM_BOT_TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
 
-st.title("📈 O Radar de Hype")
-st.subheader("Descubra se um assunto ainda vale um post")
+# 3. Seu Chat ID do Telegram
+CHAT_ID = "5936758960"
 
-tema = st.text_input("Digite um tema:", placeholder="Ex: Inteligência Artificial")
+# 4. Nome da marca que deseja monitorar
+MARCA_PADRAO = "Nike"
 
-# -------------------------
-# FUNÇÃO NEWSAPI
-# -------------------------
+# 5. Percentual mínimo para disparar alerta
+# Exemplo: 200 = aumento de 200%
+LIMITE_ALERTA = 200
 
-def buscar_noticias(tema):
-    ontem = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d")
+# ============================================================
+# 🤖 CONFIGURAÇÃO DO BOT
+# ============================================================
+
+bot = telepot.Bot(TELEGRAM_BOT_TOKEN)
+
+# ============================================================
+# 📰 FUNÇÃO PARA BUSCAR MENÇÕES NA NEWSAPI
+# ============================================================
+
+def buscar_mencoes(marca):
+    """
+    Busca quantas notícias citaram a marca
+    na última 1 hora
+    """
+
+    uma_hora_atras = (
+        datetime.now() - timedelta(hours=1)
+    ).strftime("%Y-%m-%dT%H:%M:%S")
 
     url = (
         f"https://newsapi.org/v2/everything?"
-        f"q={tema}"
-        f"&from={ontem}"
+        f"q={marca}"
+        f"&from={uma_hora_atras}"
         f"&sortBy=publishedAt"
         f"&language=pt"
         f"&apiKey={NEWS_API_KEY}"
     )
 
-    response = requests.get(url)
-    data = response.json()
+    try:
+        response = requests.get(url)
+        data = response.json()
 
-    if data["status"] != "ok":
-        return 0, []
+        if data["status"] != "ok":
+            return 0
 
-    total = data["totalResults"]
-    artigos = data["articles"][:5]
+        return data["totalResults"]
 
-    titulos = [artigo["title"] for artigo in artigos]
+    except:
+        return 0
 
-    return total, titulos
 
-# -------------------------
-# FUNÇÃO GOOGLE TRENDS
-# -------------------------
+# ============================================================
+# 📲 FUNÇÃO PARA ENVIAR ALERTA NO TELEGRAM
+# ============================================================
 
-def analisar_trends(tema):
-    pytrends = TrendReq(hl='pt-BR', tz=360)
+def enviar_alerta(marca, aumento):
+    """
+    Envia mensagem automática no Telegram
+    """
 
-    pytrends.build_payload(
-        [tema],
-        cat=0,
-        timeframe='now 7-d',
-        geo='BR',
-        gprop=''
+    mensagem = (
+        f"⚠️ ALERTA DE CRISE DE MARCA\n\n"
+        f"A marca: {marca}\n"
+        f"teve aumento de {aumento}% nas menções\n"
+        f"na última hora.\n\n"
+        f"Possível crise de imagem em andamento."
     )
 
-    dados = pytrends.interest_over_time()
+    bot.sendMessage(CHAT_ID, mensagem)
 
-    if dados.empty:
-        return None
 
-    valores = dados[tema].tolist()
+# ============================================================
+# 🔍 FUNÇÃO DE MONITORAMENTO
+# ============================================================
 
-    media_inicio = sum(valores[:3]) / 3
-    media_final = sum(valores[-3:]) / 3
+def verificar_crise(marca):
+    """
+    Compara o volume atual com o anterior
+    """
 
-    if media_final > media_inicio:
-        return "subindo"
-    elif media_final < media_inicio:
-        return "caindo"
+    mencoes_anterior = buscar_mencoes(marca)
+
+    # espera alguns segundos apenas para teste
+    # depois você pode trocar para 3600 (1 hora)
+    time.sleep(10)
+
+    mencoes_atual = buscar_mencoes(marca)
+
+    if mencoes_anterior == 0:
+        return "Sem dados suficientes ainda."
+
+    aumento = int(
+        ((mencoes_atual - mencoes_anterior)
+         / mencoes_anterior) * 100
+    )
+
+    if aumento >= LIMITE_ALERTA:
+        enviar_alerta(marca, aumento)
+        return f"⚠️ Alerta enviado! Pico de {aumento}% detectado."
+
+    return f"Monitoramento normal. Variação: {aumento}%"
+
+
+# ============================================================
+# 💻 INTERFACE STREAMLIT
+# ============================================================
+
+st.set_page_config(
+    page_title="Brand Watch",
+    page_icon="🚨",
+    layout="centered"
+)
+
+st.title("🚨 Alerta de Crise de Marca")
+st.subheader("Monitoramento simples de reputação")
+
+marca = st.text_input(
+    "Digite a marca que deseja monitorar:",
+    value=MARCA_PADRAO
+)
+
+st.markdown("---")
+
+if st.button("Iniciar Monitoramento"):
+
+    if not marca:
+        st.warning("Digite uma marca.")
     else:
-        return "estável"
+        with st.spinner("Monitorando menções..."):
 
-# -------------------------
-# ANÁLISE FINAL
-# -------------------------
+            resultado = verificar_crise(marca)
 
-if st.button("Analisar hype"):
+            st.success("Monitoramento concluído")
+            st.write(resultado)
 
-    if not tema:
-        st.warning("Digite um tema primeiro.")
-    else:
-        with st.spinner("Analisando..."):
+            st.info(
+                "Se houver pico de menções, "
+                "o alerta será enviado no Telegram."
+            )
 
-            total_noticias, titulos = buscar_noticias(tema)
-            tendencia = analisar_trends(tema)
 
-            st.write("## Resultado")
+# ============================================================
+# ▶️ COMO RODAR
+# ============================================================
 
-            st.metric("📰 Notícias nas últimas 24h", total_noticias)
-            st.write(f"📊 Tendência de busca: **{tendencia}**")
 
-            if total_noticias > 50 and tendencia == "caindo":
-                st.error("⚠️ O assunto está SATURADO")
-            elif tendencia == "subindo":
-                st.success("🚀 Ainda vale investir nesse tema")
-            else:
-                st.info("🤔 Tema em observação")
+pip install streamlit requests telepot pandas
 
-            st.write("## Principais manchetes")
-
-            for titulo in titulos:
-                st.write(f"- {titulo}")
