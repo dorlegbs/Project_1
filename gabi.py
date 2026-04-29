@@ -17,7 +17,7 @@ from datetime import datetime, timedelta
 NEWS_API_KEY = "c5a9421e78db4a1ea44f579ab3c03ee3"
 
 # 2. Token do seu Bot do Telegram
-TELEGRAM_BOT_TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
+TELEGRAM_BOT_TOKEN = "8619653628"
 
 # 3. Seu Chat ID do Telegram
 CHAT_ID = "5936758960"
