@@ -1,18 +1,14 @@
 # ============================================================
-# 🚨 ALERTA DE CRISE DE MARCA — CÓDIGO ÚNICO
+# 🚨 ALERTA DE CRISE DE MARCA — VERSÃO PROFISSIONAL
 # Python + Streamlit + NewsAPI + Telegram Bot
-#
-# O sistema monitora menções de uma marca e envia alerta
-# automático no Telegram quando detecta um pico de volume.
-#
+# Usando python-telegram-bot (melhor que telepot)
 # ============================================================
 
 import streamlit as st
 import requests
-import teleport
 import time
 from datetime import datetime, timedelta
-pip install streamlit requests telepot pandas
+from telegram import Bot
 
 # ============================================================
 # 🔧 O QUE VOCÊ PRECISA SUBSTITUIR
@@ -27,21 +23,14 @@ TELEGRAM_BOT_TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
 # 3. Seu Chat ID do Telegram
 CHAT_ID = "5936758960"
 
-# 4. Nome da marca que deseja monitorar
-MARCA_PADRAO = "Nike"
-
-# 5. Percentual mínimo para disparar alerta
-# Exemplo: 200 = aumento de 200%
-LIMITE_ALERTA = 200
-
 # ============================================================
 # 🤖 CONFIGURAÇÃO DO BOT
 # ============================================================
 
-bot = telepot.Bot(TELEGRAM_BOT_TOKEN)
+bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
 # ============================================================
-# 📰 FUNÇÃO PARA BUSCAR MENÇÕES NA NEWSAPI
+# 📰 FUNÇÃO PARA BUSCAR MENÇÕES
 # ============================================================
 
 def buscar_mencoes(marca):
@@ -77,51 +66,56 @@ def buscar_mencoes(marca):
 
 
 # ============================================================
-# 📲 FUNÇÃO PARA ENVIAR ALERTA NO TELEGRAM
+# 📲 FUNÇÃO PARA ENVIAR ALERTA
 # ============================================================
 
 def enviar_alerta(marca, aumento):
     """
-    Envia mensagem automática no Telegram
+    Envia alerta no Telegram
     """
 
     mensagem = (
         f"⚠️ ALERTA DE CRISE DE MARCA\n\n"
-        f"A marca: {marca}\n"
-        f"teve aumento de {aumento}% nas menções\n"
-        f"na última hora.\n\n"
+        f"A marca {marca} teve aumento de "
+        f"{aumento}% nas menções na última hora.\n\n"
         f"Possível crise de imagem em andamento."
     )
 
-    bot.sendMessage(CHAT_ID, mensagem)
+    try:
+        bot.send_message(
+            chat_id=CHAT_ID,
+            text=mensagem
+        )
+    except:
+        pass
 
 
 # ============================================================
 # 🔍 FUNÇÃO DE MONITORAMENTO
 # ============================================================
 
-def verificar_crise(marca):
+def verificar_crise(marca, limite_alerta):
     """
-    Compara o volume atual com o anterior
+    Verifica se houve pico de menções
     """
 
     mencoes_anterior = buscar_mencoes(marca)
 
-    # espera alguns segundos apenas para teste
+    # tempo curto para teste
     # depois você pode trocar para 3600 (1 hora)
     time.sleep(10)
 
     mencoes_atual = buscar_mencoes(marca)
 
     if mencoes_anterior == 0:
-        return "Sem dados suficientes ainda."
+        return "Sem dados suficientes para análise."
 
     aumento = int(
         ((mencoes_atual - mencoes_anterior)
          / mencoes_anterior) * 100
     )
 
-    if aumento >= LIMITE_ALERTA:
+    if aumento >= limite_alerta:
         enviar_alerta(marca, aumento)
         return f"⚠️ Alerta enviado! Pico de {aumento}% detectado."
 
@@ -133,20 +127,42 @@ def verificar_crise(marca):
 # ============================================================
 
 st.set_page_config(
-    page_title="Brand Watch",
+    page_title="Brand Watch Pro",
     page_icon="🚨",
     layout="centered"
 )
 
 st.title("🚨 Alerta de Crise de Marca")
-st.subheader("Monitoramento simples de reputação")
+st.subheader("Monitoramento profissional de reputação")
+
+st.markdown("---")
+
+# ============================================================
+# INPUT DO USUÁRIO
+# ============================================================
 
 marca = st.text_input(
     "Digite a marca que deseja monitorar:",
-    value=MARCA_PADRAO
+    value="Nike",
+    placeholder="Ex: Adidas, Coca-Cola, Apple"
 )
 
+limite_alerta = st.number_input(
+    "Defina o percentual mínimo para disparar alerta (%)",
+    min_value=50,
+    max_value=1000,
+    value=200,
+    step=50
+)
+
+st.write(f"Marca monitorada: {marca}")
+st.write(f"Limite de alerta: {limite_alerta}%")
+
 st.markdown("---")
+
+# ============================================================
+# BOTÃO PRINCIPAL
+# ============================================================
 
 if st.button("Iniciar Monitoramento"):
 
@@ -155,7 +171,10 @@ if st.button("Iniciar Monitoramento"):
     else:
         with st.spinner("Monitorando menções..."):
 
-            resultado = verificar_crise(marca)
+            resultado = verificar_crise(
+                marca,
+                limite_alerta
+            )
 
             st.success("Monitoramento concluído")
             st.write(resultado)
