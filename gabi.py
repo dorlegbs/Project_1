@@ -165,10 +165,4 @@ if st.button("Iniciar Monitoramento"):
             )
 
 
-# ============================================================
-# ▶️ COMO RODAR
-# ============================================================
-
-
-pip install streamlit requests telepot pandas
 
