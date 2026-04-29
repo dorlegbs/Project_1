@@ -23,11 +23,6 @@ TELEGRAM_BOT_TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
 CHAT_ID = "5936758960"
 
 # ============================================================
-# 🤖 CONFIGURAÇÃO DO BOT
-# ============================================================
-
-
-# ============================================================
 # 📰 FUNÇÃO PARA BUSCAR MENÇÕES
 # ============================================================
 
@@ -146,7 +141,7 @@ marca = st.text_input(
 
 limite_alerta = st.number_input(
     "Defina o percentual mínimo para disparar alerta (%)",
-    min_value=50,
+    min_value=1,
     max_value=1000,
     value=200,
     step=50
