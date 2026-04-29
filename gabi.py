@@ -68,10 +68,6 @@ def buscar_mencoes(marca):
 # ============================================================
 
 def enviar_alerta(marca, aumento):
-    """
-    Envia alerta no Telegram
-    """
-
     mensagem = (
         f"⚠️ ALERTA DE CRISE DE MARCA\n\n"
         f"A marca {marca} teve aumento de "
@@ -79,14 +75,17 @@ def enviar_alerta(marca, aumento):
         f"Possível crise de imagem em andamento."
     )
 
+    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
+
+    payload = {
+        "chat_id": CHAT_ID,
+        "text": mensagem
+    }
+
     try:
-        bot.send_message(
-            chat_id=CHAT_ID,
-            text=mensagem
-        )
+        requests.post(url, data=payload)
     except:
         pass
-
 
 # ============================================================
 # 🔍 FUNÇÃO DE MONITORAMENTO
