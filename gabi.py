@@ -33,7 +33,7 @@ def buscar_mencoes(marca):
     """
 
     uma_hora_atras = (
-        datetime.now() - timedelta(hours=1)
+        datetime.now() - timedelta(hours=24)
     ).strftime("%Y-%m-%dT%H:%M:%S")
 
     url = (
