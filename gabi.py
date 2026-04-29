@@ -8,7 +8,6 @@ import streamlit as st
 import requests
 import time
 from datetime import datetime, timedelta
-from telegram.bot import Bot
 
 # ============================================================
 # 🔧 O QUE VOCÊ PRECISA SUBSTITUIR
@@ -27,7 +26,6 @@ CHAT_ID = "5936758960"
 # 🤖 CONFIGURAÇÃO DO BOT
 # ============================================================
 
-bot = Bot(token=TELEGRAM_BOT_TOKEN)
 
 # ============================================================
 # 📰 FUNÇÃO PARA BUSCAR MENÇÕES
