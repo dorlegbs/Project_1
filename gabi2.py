@@ -225,24 +225,5 @@ if st.button("Verificar Mensagens"):
         else:
             st.info("Nenhuma mensagem nova.")
 
-# bot_listener.py
-import requests
-import time
-
-TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
-LAST_ID = 0
-
-def receber():
-    global LAST_ID
-    r = requests.get(f"https://api.telegram.org/bot{TOKEN}/getUpdates",
-                     params={"offset": LAST_ID + 1, "timeout": 30})
-    if r.json()["ok"]:
-        for msg in r.json()["result"]:
-            LAST_ID = msg["update_id"]
-            print(f"Nova msg: {msg['message']['text']}")
-
-while True:
-    receber()
-    time.sleep(1)
 
 
