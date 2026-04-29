@@ -9,9 +9,10 @@
 
 import streamlit as st
 import requests
-import telepot
+import teleport
 import time
 from datetime import datetime, timedelta
+pip install streamlit requests telepot pandas
 
 # ============================================================
 # 🔧 O QUE VOCÊ PRECISA SUBSTITUIR
