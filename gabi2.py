@@ -22,9 +22,6 @@ TELEGRAM_BOT_TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
 # 3. Seu Chat ID do Telegram
 CHAT_ID = "5936758960"
 
-# 4. Último update_id para receber mensagens
-LAST_UPDATE_ID = 0
-
 # ============================================================
 # 📰 FUNÇÃO PARA BUSCAR MENÇÕES
 # ============================================================
