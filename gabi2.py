@@ -229,7 +229,7 @@ if st.button("Verificar Mensagens"):
 import requests
 import time
 
-TOKEN = "seu_token"
+TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
 LAST_ID = 0
 
 def receber():
