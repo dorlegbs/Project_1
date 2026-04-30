@@ -14,13 +14,13 @@ from datetime import datetime, timedelta
 # ============================================================
 
 # 1. Sua chave da NewsAPI
-NEWS_API_KEY = "c5a9421e78db4a1ea44f579ab3c03ee3"
+NEWS_API_KEY = 
 
 # 2. Token do seu Bot do Telegram (formato: 123456789:ABCdefGHIjklMNOpqrsTUVwxyz)
-TELEGRAM_BOT_TOKEN = "8619653628:AAEfZ70FPAkUvDFb7WiYs8miLHx6zMctZcM"
+TELEGRAM_BOT_TOKEN = 
 
 # 3. Seu Chat ID do Telegram
-CHAT_ID = "5936758960"
+CHAT_ID = 
 
 # 4. Último update_id para receber mensagens
 LAST_UPDATE_ID = 0
